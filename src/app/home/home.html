@@ -1,37 +1,87 @@
+
 <div>
-    <div class="border border-gray-650 bg-white p-4 h-500 w-370 ml-6 mt-2 ">
-        <h1 class=" text-blue-950 text-3xl font-bold ml-20 mt-3 ">Números de salida internos o externos</h1>
-        <h2 class="text-gray-800 text-2xl ml-20 mt-3 ">Consulta y gestión de los números generados</h2>
+    <div class="border border-gray-650 bg-white p-4 h-fit w-full max-w-[1480px] mx-auto mt-2">
+
+        <h1 class="text-blue-950 text-3xl font-bold ml-4 md:ml-20 mt-3">
+            Números de salida internos o externos
+        </h1>
+
+        <h2 class="text-gray-800 text-2xl ml-4 md:ml-20 mt-3">
+            Consulta y gestión de los números generados
+        </h2>
+
+        <img src="/logoemquilichao.png" alt=""
+            class="w-32 md:w-50 ml-auto mr-4 md:mr-10 -mt-2 md:-mt-22 mb-6">
 
 
-        <div class="border border-gray-650 bg-white ">
+        <div class="border border-gray-650 bg-white h-fit pb-15">
 
-            <input type="search" placeholder=" Busca por número, destinatario o asunto" class="border border-gray-500 ml-10 mt-8 rounded-[10px] w-100 " >
-            
-            <select name="" id="" class="ml-150 border border-gray-600 rounded-[8px] w-40 "> 
+            <input type="search" placeholder=" Busca por número, destinatario o asunto"
+                class="border border-gray-500 ml-4 md:ml-10 mt-8 rounded-[10px] w-[calc(100%-2rem)] md:w-100">
+
+            <select name="" id=""
+                class="ml-4 md:ml-150 mt-4 md:mt-0 border border-gray-600 rounded-[8px] w-[calc(100%-2rem)] md:w-70">
                 <option value="">Todas las areas</option>
-                <option value="">Gerencia</option> 
-                <option value="">Comercial</option> 
+                <option value="">Gerencia - 100</option>
+                <option value="">Juridica - 110</option>
+                <option value="">Control Interno - 120</option>
+                <option value="">Subgerencia Administrativa - 130</option>
+                <option value="">Comercial - 131</option>
+                <option value="">Financiera - 132</option>
+                <option value="">Gestión Administrativa - 133</option>
+                <option value="">subgerente operativo - 140</option>
                 <option value="">Acueducto</option>
+                <option value="">Alcantarillado - 142</option>
+                <option value="">Aseo - 143</option>
             </select>
-            
-            <div class="border border-blue-400 w-340 h-100 ml-10 mt-3 ">
-                <div class="bg-blue-100 h-10 " >
-                    <h3 class="text-blue-800 ml-10 "  >Código área</h3>
-                <h3 class="text-blue-800 ml-45 -mt-6" >N° Salida</h3>
-                <h3 class="text-blue-800 ml-75  -mt-5 " >Fecha</h3>
-                <h3 class="text-blue-800 ml-105 -mt-6 " >Destinatario</h3>
-                <h3 class="text-blue-800 ml-145 -mt-6 " >Asunto</h3>
-                <h3 class="text-blue-800 ml-175 -mt-6" >Dependencia</h3>
+
+            <div class="border border-sky-500 w-[calc(100%-2rem)] md:w-340 h-100 ml-4 md:ml-10 mt-3 overflow-x-auto">
+
+                <div class="bg-blue-100 h-13 pt-2 min-w-[1100px]">
+
+                    <h3 class="text-blue-800 ml-10">Código área</h3>
+                    <h3 class="text-blue-800 ml-65 -mt-5">N° Salida</h3>
+                    <h3 class="text-blue-800 ml-110 -mt-6">Fecha</h3>
+                    <h3 class="text-blue-800 ml-150 -mt-6">Destinatario</h3>
+                    <h3 class="text-blue-800 ml-200 -mt-6">Asunto</h3>
+                    <h3 class="text-blue-800 ml-250 -mt-6">Dependencia</h3>
+
                 </div>
-                
+
             </div>
-            
+
+        </div>
+
+
+        <div class="flex flex-col md:flex-row my-15 gap-4">
+
+            <div type="button"
+                class="bg-white border border-sky-500 w-40 rounded-[8px] ml-4">
+
+                <a href="" class="flex mt-1">
+                    <img src="/Flecha.png" alt="" class="w-5 h-5 mr-2 ml-2 mt-1">
+                    Devolver inicio
+                </a>
+
+            </div>
+
+
+            <div class="bg-green-500 rounded-[8px] w-40 ml-4 md:ml-auto">
+
+                <a
+                    routerLink="/new-number"
+                    href=""
+                    class="flex items-center gap-1 text-white">
+
+                    <span class="text-3xl -mt-1">+</span>
+                    Nuevo número
+
+                </a>
+
+            </div>
+
         </div>
 
     </div>
-
-
-
-
 </div>
+```
