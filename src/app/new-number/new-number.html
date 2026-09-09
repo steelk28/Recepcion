@@ -68,18 +68,33 @@
 
     <div class="flex flex-col md:flex-row my-10 gap-140">
         <div class="bg-red-500 w-20 h-10 rounded-[8px] mb-10 ml-100 ">
-            <a routerLinkO="/home" href="" class="" >
+            <a routerLinkO="/home" href="" class="">
                 <p class="text-white text-center mt-2  ">Cancelar</p>
             </a>
         </div>
 
-        <div class="bg-green-500 w-30 h-10 rounded-[8px]" >
-            <a href=""  >
-                <p class="text-white text-center mt-2" >Crear número</p>
-            </a>
+        <div class="bg-green-500 w-30 h-10 rounded-[8px]" (click)="createNumber()">
+
+            <p class="text-white text-center mt-2">Crear número</p>
+
         </div>
     </div>
 
+    @if(showModal){
+    <div class="fixed inset-0 bg-black/40 flex items-center justify-center ">
+        <div class=" flex flex-col items-center bg-white w-70 h-40  rounded-[8px] ">
 
+            <h1 class="mb-2 text-blue-950 text-2xl font-bold mt-4 ">Tu número de salida es:</h1>
+            <p class="text-center mb-5 text-2xl">
+                {{numberCreate}}
+            </p>
+<!--  routerLink="/home"-->
+            <button type="button" (click)="closeNumber()" class="text-center border bg-green-500 rounded-[8px] text-white w-15"> Aceptar </button>
+
+        </div>
+
+
+    </div>
+    } 
 
 </div>

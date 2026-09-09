@@ -12,5 +12,25 @@ export class NewNumber {
   private Api = inject(Api);
 
   Salidas = [];
+
+
+
+  //código para la pantalla emergente
+  showModal = true;
+
+  numberCreate: number = 0;
+
+  createNumber(){
+    this.numberCreate = 125;
+
+    this.showModal = true;
+
+   document.body.style.overflow = 'hidden';
+  }
+
+  closeNumber(){
+    this.showModal = false;
+    document.body.style.overflow = '';
+  }
   
 }
