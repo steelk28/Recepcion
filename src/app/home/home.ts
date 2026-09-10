@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Api } from '../service/api';
-import { Salidas } from '../models/salidas';
+import { Outbound } from '../models/outbound';
 
 @Component({
   selector: 'app-home',
@@ -11,17 +11,18 @@ import { Salidas } from '../models/salidas';
 })
 export class Home {
    private api = inject(Api);
-  salidas: Salidas[] = [];
+  outbounds: Outbound[] = [];
 
-  ngOnInit() {
-    this.api.getSalidas().subscribe({
+  ngOnInit() { 
+    this.api.getoutbound().subscribe({
       next: (datos) => {
         console.log('¿ES ARRAY?', Array.isArray(datos));
         console.log('TIPO:', typeof datos);
         console.log('DATOS:', datos);
-        this.salidas = datos;
-        console.log('SALIDAS DESPUÉS DE ASIGNAR:', this.salidas.length);
-        console.log('PRIMER ELEMENTO:', datos[0]);
+        this.outbounds= datos;
+        console.log('SALIDAS DESPUÉS DE ASIGNAR:', this.outbounds.length);
+        console.log('PRIMER ELEMENTO:', datos[1]);
+        console.log('TODOS ELEMENTO:', datos);
       },
       error: (error) => {
         console.error('Error: ', error);

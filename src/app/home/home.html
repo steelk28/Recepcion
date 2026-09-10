@@ -76,7 +76,7 @@
      <!-- Datos de la tabla-->
         <tbody>
             @for (outbound of outbounds; track outbound.id) {
-                <tr>
+                <tr class="border-b border-gray-200 hover:bg-gray-50" >
                     <td class="text-center px-4 py-2">
                         {{ outbound.num_area }}
                     </td>
@@ -96,7 +96,8 @@
                         {{ outbound.area }}
                     </td>
                     <td class="text-center px-4 py-2" >
-                        <button type="button">
+                        <button type="button"
+                        class="text-gray-600 text-2xl font-bold hover:text-blue-700">
                             ⋮
                         </button>
                     </td>
@@ -165,7 +166,7 @@
                 </div>
 
 
-                <div class="bg-green-500 rounded-[8px] w-40 ml-4 md:ml-auto">
+                <div class="bg-green-500 rounded-[8px] w-40 ml-4 md:ml-auto hover:bg-green-900 hover:-translate-y-1 ">
 
                     <a routerLink="/new-number" href="" class="flex items-center gap-1 text-white">
 
