@@ -15,7 +15,7 @@ export class NewNumber {
 
 
 
-  //código para la pantalla emergente
+  //código para la pantalla emergente del nuevo numero
   showModal = true;
 
   numberCreate: number = 0;
@@ -23,7 +23,7 @@ export class NewNumber {
   createNumber(){
     this.numberCreate = 125;
 
-    this.showModal = true;
+    this.showModal = false;
 
    document.body.style.overflow = 'hidden';
   }

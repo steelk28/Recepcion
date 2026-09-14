@@ -2,10 +2,11 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Api } from '../service/api';
 import { Outbound } from '../models/outbound';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink],
+  imports: [RouterLink, DatePipe],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -21,7 +22,6 @@ export class Home {
         console.log('DATOS:', datos);
         this.outbounds= datos;
         console.log('SALIDAS DESPUÉS DE ASIGNAR:', this.outbounds.length);
-        console.log('PRIMER ELEMENTO:', datos[1]);
         console.log('TODOS ELEMENTO:', datos);
       },
       error: (error) => {

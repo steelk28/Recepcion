@@ -1,100 +1,170 @@
-<div class="border border-gray-500 rounded-[8px]">
+<div class="border border-gray-500 rounded-[8px] bg-white p-4 md:p-8">
 
-    <h1 class="text-blue-950 text-3xl font-bold ml-20 mt-10">
-        NUEVA SALIDA
-    </h1>
-
-    <H3 class="text-gray-600 text-2xl ml-20 ">
-        Genera un nuevo número de salida
-    </H3>
-
-    <img src="/logoemquilichao.png" alt="" class="w-50 ml-290 -mt-22 mb-10 ">
-    <div class=" flex justify-between items-start px-50 ">
+    <!-- ENCABEZADO -->
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
 
         <div>
-            <h1 class=" mb-2 text-2xl ">Área</h1>
+            <h1 class="text-blue-950 text-3xl font-bold mt-4">
+                NUEVA SALIDA
+            </h1>
 
-            <select name="" id="" class=" border border-gray-600 rounded-[8px] h-10 md: ">
+            <h3 class="text-gray-600 text-xl md:text-2xl mt-1">
+                Genera un nuevo número de salida
+            </h3>
+        </div>
+
+        <img
+            src="/logoemquilichao.png"
+            alt="Logo Emquilichao"
+            class="w-32 md:w-48 self-end md:self-start"
+        >
+
+    </div>
+
+
+    <!-- ÁREA Y NÚMERO DE ÁREA -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 max-w-5xl mx-auto mt-10">
+
+        <!-- ÁREA -->
+        <div>
+            <h1 class="mb-2 text-xl md:text-2xl">
+                Área
+            </h1>
+
+            <select
+                name=""
+                id=""
+                class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
+            >
                 <option value="">Gerencia - 100</option>
-                <option value="">Juridica - 110</option>
+                <option value="">Jurídica - 110</option>
                 <option value="">Control Interno - 120</option>
                 <option value="">Subgerencia Administrativa - 130</option>
                 <option value="">Comercial - 131</option>
                 <option value="">Financiera - 132</option>
                 <option value="">Gestión Administrativa - 133</option>
-                <option value="">subgerente operativo - 140</option>
-                <option value="">Acueducto</option>
+                <option value="">Subgerencia Operativa - 140</option>
+                <option value="">Acueducto - 141</option>
                 <option value="">Alcantarillado - 142</option>
                 <option value="">Aseo - 143</option>
             </select>
         </div>
 
-        <div class="bg-gray-400 w-1 h-50 rounded-[2px]"></div>
 
+        <!-- NÚMERO DE ÁREA -->
         <div>
-            <h1 class=" mb-2 text-2xl  ">Número de área</h1>
+            <h1 class="mb-2 text-xl md:text-2xl">
+                Número de área
+            </h1>
 
-            <select name="" id="" class=" w-30 border border-gray-600 rounded-[8px] h-10  ">
-                <option value=""> 100</option>
-                <option value=""> 110</option>
-                <option value=""> 120</option>
-                <option value=""> 130</option>
-                <option value=""> 131</option>
-                <option value=""> 132</option>
-                <option value=""> 133</option>
-                <option value=""> 140</option>
-                <option value=""> 141</option>
-                <option value=""> 142</option>
-                <option value=""> 143</option>
+            <select
+                name=""
+                id=""
+                class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
+            >
+                <option value="">100</option>
+                <option value="">110</option>
+                <option value="">120</option>
+                <option value="">130</option>
+                <option value="">131</option>
+                <option value="">132</option>
+                <option value="">133</option>
+                <option value="">140</option>
+                <option value="">141</option>
+                <option value="">142</option>
+                <option value="">143</option>
             </select>
         </div>
 
     </div>
 
-    <div>
-        <h1 class="text-2xl pl-50">Destinatario</h1>
-        <input type="search" placeholder="Escribe el destinatario "
-            class=" border border-gray-600 ml-50 rounded-[8px] h-10 w-300 mb-20">
+
+    <!-- DESTINATARIO -->
+    <div class="max-w-5xl mx-auto mt-8">
+
+        <h1 class="text-xl md:text-2xl mb-2">
+            Destinatario
+        </h1>
+
+        <input
+            type="text"
+            placeholder="Escribe el destinatario"
+            class="border border-gray-600 rounded-[8px] h-10 w-full px-3"
+        >
+
     </div>
 
-    <div>
-        <h1 class="text-2xl pl-50">Asunto</h1>
-        <input type="search" placeholder="Escribe el asunto "
-            class=" border border-gray-600 ml-50 rounded-[8px] h-65 w-300 mb-10">
+
+    <!-- ASUNTO -->
+    <div class="max-w-5xl mx-auto mt-8">
+
+        <h1 class="text-xl md:text-2xl mb-2">
+            Asunto
+        </h1>
+
+        <textarea
+            placeholder="Escribe el asunto"
+            class="border border-gray-600 rounded-[8px] w-full h-40 md:h-56 px-3 py-2 resize-none"
+        ></textarea>
+
     </div>
 
 
+    <!-- BOTONES -->
+    <div class="flex flex-col-reverse sm:flex-row justify-center gap-4 sm:gap-8 mt-10 mb-6">
 
+        <!-- CANCELAR -->
+        <div class="bg-red-500 w-full sm:w-24 h-10 rounded-[8px] hover:bg-red-700">
 
-    <div class="flex flex-col md:flex-row my-10 gap-140">
-        <div class="bg-red-500 w-20 h-10 rounded-[8px] mb-10 ml-100 ">
-            <a routerLinkO="/home" href="" class="">
-                <p class="text-white text-center mt-2  ">Cancelar</p>
+            <a
+                routerLink="/home"
+                class="flex items-center justify-center h-full text-white"
+            >
+                Cancelar
             </a>
-        </div>
-
-        <div class="bg-green-500 w-30 h-10 rounded-[8px]" (click)="createNumber()">
-
-            <p class="text-white text-center mt-2">Crear número</p>
 
         </div>
+
+
+        <!-- CREAR NÚMERO -->
+        <button
+            type="button"
+            (click)="createNumber()"
+            class="bg-green-500 w-full sm:w-32 h-10 rounded-[8px] text-white hover:bg-green-700 hover:-translate-y-1"
+        >
+            Crear número
+        </button>
+
     </div>
 
+
+    <!-- MODAL -->
     @if(showModal){
-    <div class="fixed inset-0 bg-black/40 flex items-center justify-center ">
-        <div class=" flex flex-col items-center bg-white w-70 h-40  rounded-[8px] ">
 
-            <h1 class="mb-2 text-blue-950 text-2xl font-bold mt-4 ">Tu número de salida es:</h1>
-            <p class="text-center mb-5 text-2xl">
-                {{numberCreate}}
-            </p>
-<!--  routerLink="/home"-->
-            <button type="button" (click)="closeNumber()" class="text-center border bg-green-500 rounded-[8px] text-white w-15"> Aceptar </button>
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center px-4">
+
+            <div class="flex flex-col items-center bg-white w-full max-w-sm min-h-40 rounded-[8px] p-5">
+
+                <h1 class="mb-2 text-blue-950 text-xl md:text-2xl font-bold text-center">
+                    Tu número de salida es:
+                </h1>
+
+                <p class="text-center mb-5 text-2xl">
+                    {{numberCreate}}
+                </p>
+
+                <button
+                    type="button"
+                    (click)="closeNumber()"
+                    class="text-center border bg-green-500 rounded-[8px] text-white w-20 h-9 hover:bg-green-700"
+                >
+                    Aceptar
+                </button>
+
+            </div>
 
         </div>
 
-
-    </div>
-    } 
+    }
 
 </div>
