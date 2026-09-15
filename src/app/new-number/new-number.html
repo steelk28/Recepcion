@@ -35,18 +35,16 @@
                 name=""
                 id=""
                 class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
+                [value]="areaSeleccionada.numero"
+                (change)="cambiarArea(+$any($event.target).value)"
             >
-                <option value="">Gerencia - 100</option>
-                <option value="">Jurídica - 110</option>
-                <option value="">Control Interno - 120</option>
-                <option value="">Subgerencia Administrativa - 130</option>
-                <option value="">Comercial - 131</option>
-                <option value="">Financiera - 132</option>
-                <option value="">Gestión Administrativa - 133</option>
-                <option value="">Subgerencia Operativa - 140</option>
-                <option value="">Acueducto - 141</option>
-                <option value="">Alcantarillado - 142</option>
-                <option value="">Aseo - 143</option>
+
+            @for (area of areas; track area.numero){
+                <option value="area.numero">
+                    {{area.nombre}} - {{area.numero}}
+                </option>
+            }
+
             </select>
         </div>
 
@@ -61,18 +59,19 @@
                 name=""
                 id=""
                 class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
+                [value]="numeroArea"
+                (change)="cambiarNumeroArea(+$any($event.target).value)"
             >
-                <option value="">100</option>
-                <option value="">110</option>
-                <option value="">120</option>
-                <option value="">130</option>
-                <option value="">131</option>
-                <option value="">132</option>
-                <option value="">133</option>
-                <option value="">140</option>
-                <option value="">141</option>
-                <option value="">142</option>
-                <option value="">143</option>
+
+            @for (area of areas; track area.numero){
+                   <option [value]="area.numero">
+                {{area.numero}}
+            </option>
+            }
+ 
+         
+
+
             </select>
         </div>
 
