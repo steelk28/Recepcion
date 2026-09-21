@@ -1,4 +1,6 @@
 export interface CreateOutbound {
+
+
     num_area: number;
 
     date: string;

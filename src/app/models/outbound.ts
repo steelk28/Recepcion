@@ -9,4 +9,3 @@ export interface Outbound {
     status:string;
 }
 
-//esperando al gerente para ir a la reserva -Ximena

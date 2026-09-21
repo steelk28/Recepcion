@@ -32,17 +32,15 @@
             </h1>
 
             <select
-                name=""
-                id=""
-                class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
-                [value]="areaSeleccionada.numero"
-                (change)="cambiarArea(+$any($event.target).value)"
+               class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
+    [value]="areaSeleccionada.numero"
+    (change)="cambiarArea(+$any($event.target).value)"
             >
 
-            @for (area of areas; track area.numero){
-                <option value="area.numero">
-                    {{area.nombre}} - {{area.numero}}
-                </option>
+  @for (area of areas; track area.numero) {
+        <option [value]="area.numero">
+            {{ area.nombre }} - {{ area.numero }}
+        </option>
             }
 
             </select>
@@ -56,17 +54,15 @@
             </h1>
 
             <select
-                name=""
-                id=""
-                class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
-                [value]="numeroArea"
-                (change)="cambiarNumeroArea(+$any($event.target).value)"
+             class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
+    [value]="numeroArea"
+    (change)="cambiarNumeroArea(+$any($event.target).value)"
             >
 
-            @for (area of areas; track area.numero){
-                   <option [value]="area.numero">
-                {{area.numero}}
-            </option>
+               @for (area of areas; track area.numero) {
+        <option [value]="area.numero">
+            {{ area.numero }}
+        </option>
             }
  
          
@@ -86,9 +82,10 @@
         </h1>
 
         <input
-            type="text"
-            placeholder="Escribe el destinatario"
-            class="border border-gray-600 rounded-[8px] h-10 w-full px-3"
+             type="text"
+    placeholder="Escribe el destinatario"
+    class="border border-gray-600 rounded-[8px] h-10 w-full px-3"
+    [(ngModel)]="destinatario"
         >
 
     </div>
@@ -101,10 +98,11 @@
             Asunto
         </h1>
 
-        <textarea
-            placeholder="Escribe el asunto"
-            class="border border-gray-600 rounded-[8px] w-full h-40 md:h-56 px-3 py-2 resize-none"
-        ></textarea>
+      <textarea
+    placeholder="Escribe el asunto"
+    class="border border-gray-600 rounded-[8px] w-full h-40 md:h-56 px-3 py-2 resize-none"
+    [(ngModel)]="asunto"
+></textarea>
 
     </div>
 
@@ -126,19 +124,21 @@
 
 
         <!-- CREAR NÚMERO -->
-        <button
-            type="button"
+  <button
+      type="button"
             (click)="createNumber()"
-            class="bg-green-500 w-full sm:w-32 h-10 rounded-[8px] text-white hover:bg-green-700 hover:-translate-y-1"
-        >
-            Crear número
-        </button>
+            [disabled]="creandoNumero() || !destinatario || !asunto"
+      
+    class="bg-green-500 w-full sm:w-32 h-10 rounded-[8px] text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+>
+    Crear número
+</button>
 
     </div>
 
 
     <!-- MODAL -->
-    @if(showModal){
+    @if(showModal()) {
 
         <div class="fixed inset-0 bg-black/40 flex items-center justify-center px-4">
 
@@ -149,10 +149,12 @@
                 </h1>
 
                 <p class="text-center mb-5 text-2xl">
-                    {{numberCreate}}
+                    {{numberCreate()}}
                 </p>
 
                 <button
+                 routerLink="/home"
+                 
                     type="button"
                     (click)="closeNumber()"
                     class="text-center border bg-green-500 rounded-[8px] text-white w-20 h-9 hover:bg-green-700"

@@ -14,149 +14,91 @@
 
         <div class="border border-gray-650 bg-white h-fit pb-15">
 
-            <input type="search" placeholder=" Busca por número, destinatario o asunto"
-                class="border border-gray-500 ml-4 md:ml-10 mt-8 rounded-[10px] w-[calc(100%-2rem)] md:w-100">
+            <!-- FILTROS -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-4 md:px-10 pt-8">
 
-            <select name="" id=""
-                class="ml-4 md:ml-150 mt-4 md:mt-0 border border-gray-600 rounded-[8px] w-[calc(100%-2rem)] md:w-70">
-                <option value="">Todas las areas</option>
-                <option value="">Gerencia - 100</option>
-                <option value="">Juridica - 110</option>
-                <option value="">Control Interno - 120</option>
-                <option value="">Subgerencia Administrativa - 130</option>
-                <option value="">Comercial - 131</option>
-                <option value="">Financiera - 132</option>
-                <option value="">Gestión Administrativa - 133</option>
-                <option value="">subgerente operativo - 140</option>
-                <option value="">Acueducto</option>
-                <option value="">Alcantarillado - 142</option>
-                <option value="">Aseo - 143</option>
-            </select>
+                <input type="search" placeholder="Busca por número, destinatario o asunto"
+                    (input)="busqueda.set($any($event.target).value)"
+                    class="border border-gray-500 rounded-[10px] h-10 px-3 w-full md:w-96">
 
+                <select
+                    (change)="areaFiltro.set($any($event.target).value)"
+                    class="border border-gray-600 rounded-[10px] h-10 px-3 w-full md:w-72">
+
+                    <option value="">Todas las áreas</option>
+
+                    @for (area of areas; track area.numero) {
+                        <option [value]="area.numero">
+                            {{ area.nombre }} - {{ area.numero }}
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+            <!-- TABLA -->
             <div class="border border-sky-500 w-full h-100 mt-3 overflow-x-auto">
 
-    <table class="w-full min-w-[900px] border-collapse">
+                <table class="w-full min-w-[900px] border-collapse">
 
-        <!-- ENCABEZADO DE LA TABLA -->
-        <thead>
-            <tr class="bg-blue-100 h-13">
+                    <thead>
+                        <tr class="bg-blue-100 h-13">
+                            <th class="text-blue-800 font-bold text-center px-4 py-2">Código de área</th>
+                            <th class="text-blue-800 font-bold text-center px-4 py-2">Salida</th>
+                            <th class="text-blue-800 font-bold text-center px-4 py-2">Fecha</th>
+                            <th class="text-blue-800 font-bold text-center px-4 py-2">Destinatario</th>
+                            <th class="text-blue-800 font-bold text-center px-4 py-2">Asunto</th>
+                            <th class="text-blue-800 font-bold text-center px-4 py-2">Dependencia</th>
+                            <th class="text-blue-800 font-bold text-center px-4 py-2">Acciones</th>
+                        </tr>
+                    </thead>
 
-                <th class="text-blue-800 font-bold text-center px-4 py-2">
-                    Código de área
-                </th>
+                    <tbody>
+                        @for (outbound of outboundsFiltrados(); track outbound.id) {
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
 
-                <th class="text-blue-800 font-bold text-center px-4 py-2">
-                    Salida
-                </th>
+                                <td class="text-center px-4 py-2">{{ outbound.num_area }}</td>
+                                <td class="text-center px-4 py-2">{{ outbound.consecutive }}</td>
+                                <td class="text-center px-4 py-2">{{ outbound.date | date:'dd/MM/yyyy' }}</td>
+                                <td class="text-center px-4 py-2">{{ outbound.addressee }}</td>
+                                <td class="text-center px-4 py-2">{{ outbound.description }}</td>
+                                <td class="text-center px-4 py-2">{{ outbound.area }}</td>
 
-                <th class="text-blue-800 font-bold text-center px-4 py-2">
-                    Fecha
-                </th>
+                                <!-- ACCIONES -->
+                                <td class="text-center px-4 py-2">
+                                    <div class="flex items-center justify-center gap-4">
 
-                <th class="text-blue-800 font-bold text-center px-4 py-2">
-                    Destinatario
-                </th>
+                                        <button type="button"
+                                            (click)="abrirEditar(outbound)"
+                                            class="text-blue-700 hover:underline">
+                                            Editar
+                                        </button>
 
-                <th class="text-blue-800 font-bold text-center px-4 py-2">
-                    Asunto
-                </th>
+                                     
 
-                <th class="text-blue-800 font-bold text-center px-4 py-2">
-                    Dependencia
-                </th>
+                                    </div>
+                                </td>
 
-                <th class="text-blue-800 font-bold text-center px-4 py-2">
-                    Acciones
-                    
-                </th>
-
-            </tr>
-        </thead>
-
-     <!-- Datos de la tabla-->
-        <tbody>
-            @for (outbound of outbounds; track outbound.id) {
-                <tr class="border-b border-gray-200 hover:bg-gray-50" >
-                    <td class="text-center px-4 py-2">
-                        {{ outbound.num_area }}
-                    </td>
-                    <td class="text-center px-4 py-2">
-                        {{ outbound.consecutive }}
-                    </td>
-                    <td class="text-center px-4 py-2">
-                        {{ outbound.date | date:'dd/MM/yyyy' }}
-                    </td>
-                    <td class="text-center px-4 py-2">
-                        {{ outbound.addressee }}
-                    </td>
-                    <td class="text-center px-4 py-2">
-                        {{ outbound.description }}
-                    </td>
-                    <td class="text-center px-4 py-2">
-                        {{ outbound.area }}
-                    </td>
-                    <td class="text-center px-4 py-2" >
-                        <button type="button"
-                        class="text-gray-600 text-2xl font-bold hover:text-blue-700">
-                            ⋮
-                        </button>
-                    </td>
-
-                </tr>
-            }
-        </tbody>
-
-   </table>
-
-
-
-
-
-</div>
-        <!--<div class="border border-sky-500 h-100   "> md:w-340 h-100 ml-4 md:ml-10 mr-2 mt-3
-
-                <div class="bg-blue-100 h-8 pt-2 w-full">
-                    <table class="w-full table-fixed">
-                        <thead>
-                            <tr>
-                                <th class="text-blue-800 w-[16%] text-center">
-                                Código de area
-                            </th>
-                            <th class="text-blue-800 w-[16%] text-center">
-                                Salida
-                            </th>
-                            <th class="text-blue-800 w-[16%] text-center">
-                                Fecha
-                            </th>
-                            <th class="text-blue-800 w-[16%] text-center">
-                                Destinatario
-                            </th>
-                            <th class="text-blue-800 w-[16%] text-center">
-                                Asunto
-                            </th>
-                            <th class="text-blue-800 w-[16%] text-center">
-                                Dependencia
-                            </th>
                             </tr>
-                        </thead>
-                        <tbody class="text-center">
-                            @for (salida of salidas; track $index) {
+                        } @empty {
                             <tr>
-                                <td>PRUEBA</td>
-                                <td>{{ salida.consecutive }}</td>
+                                <td colspan="7" class="text-center text-gray-500 py-6">
+                                    No se encontraron resultados
+                                </td>
                             </tr>
-                            }
-                        </tbody>
-                    </table>
-                    <div>
-                    </div> -->
+                        }
+                    </tbody>
 
-                </div>
+                </table>
 
-                
+            </div>
+
+
+            <!-- BOTONES INFERIORES -->
             <div class="flex flex-col md:flex-row my-15 gap-4">
 
-                <div type="button" class="bg-white border border-sky-500 w-40 rounded-[8px] ml-4">
+                <div class="bg-white border border-sky-500 w-40 rounded-[8px] ml-4">
 
                     <a href="" class="flex mt-1">
                         <img src="/Flecha.png" alt="" class="w-5 h-5 mr-2 ml-2 mt-1">
@@ -165,23 +107,70 @@
 
                 </div>
 
-                <!--boton nuevo numero-->
-                <div class="bg-green-500 rounded-[8px] w-40 ml-4 md:ml-auto hover:bg-green-900 hover:-translate-y-1 ">
+                <div class="bg-green-500 rounded-[8px] w-40 ml-4 md:ml-auto hover:bg-green-900 hover:-translate-y-1">
 
-                    <a routerLink="/new-number" href="" class="flex items-center gap-1 text-white">
-
+                    <a routerLink="/new-number" class="flex items-center gap-1 text-white">
                         <span class="text-3xl -mt-1">+</span>
                         Nuevo número
-
                     </a>
 
                 </div>
 
-            </div> 
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MODAL PARA EDITAR -->
+    @if (editando(); as salida) {
+
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-50">
+
+            <div class="bg-white w-full max-w-lg rounded-[8px] p-6">
+
+                <h2 class="text-blue-950 text-2xl font-bold">
+                    Editar salida N° {{ salida.consecutive }}
+                </h2>
+
+                <p class="text-gray-600 mb-4">
+                    {{ salida.area }} - {{ salida.num_area }}
+                </p>
+
+                <label class="block text-lg mb-1">Destinatario</label>
+                <input type="text"
+                    [value]="editDestinatario()"
+                    (input)="editDestinatario.set($any($event.target).value)"
+                    class="border border-gray-600 rounded-[8px] h-10 w-full px-3 mb-4">
+
+                <label class="block text-lg mb-1">Asunto</label>
+                <textarea
+                    [value]="editAsunto()"
+                    (input)="editAsunto.set($any($event.target).value)"
+                    class="border border-gray-600 rounded-[8px] w-full h-32 px-3 py-2 resize-none"></textarea>
+
+                <div class="flex justify-end gap-3 mt-5">
+
+                    <button type="button"
+                        (click)="cerrarEditar()"
+                        class="bg-red-500 text-white rounded-[8px] h-10 px-4 hover:bg-red-700">
+                        Cancelar
+                    </button>
+
+                    <button type="button"
+                        (click)="guardarEdicion()"
+                        [disabled]="guardando() || !editDestinatario().trim() || !editAsunto().trim()"
+                        class="bg-green-500 text-white rounded-[8px] h-10 px-4 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Guardar
+                    </button>
+
+                </div>
 
             </div>
 
-
-
         </div>
-    
+
+    }
+
+</div>

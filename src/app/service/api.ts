@@ -14,7 +14,15 @@ export class Api {
         return this.http.get<Outbound[]>(`${this.urlApi}/outbound`);
     }
 
-    createoutbound(outbound: CreateOutbound){
-        return this.http.post<Outbound[]>(`${this.urlApi}/outbound`, outbound);
-    }
+ createoutbound(outbound: CreateOutbound){
+    return this.http.post<any>(`${this.urlApi}/outbound`, outbound);
+}
+
+  updateoutbound(id: number, data: {addressee: string, description: string,}) {
+    return this.http.put<any>(`${this.urlApi}/outbound/${id}`, data);
+  }
+
+  deleteoutbound(id: number) {
+    return this.http.delete<any>(`${this.urlApi}/outbound/${id}`);
+  }
 }   
