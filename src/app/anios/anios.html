@@ -1,0 +1,200 @@
+<div class="border border-gray-500 rounded-[8px] bg-white p-6 max-w-[92rem] mx-auto mt-6">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-blue-950 text-3xl font-bold">Gestión de años</h1>
+        <a routerLink="/ajustes" class="text-blue-700 hover:underline">← Volver a Ajustes</a>
+    </div>
+
+    @if (estado(); as e) {
+
+        <!-- Cambio de año: solo lo ve el administrador -->
+        @if (admin.autorizado()) {
+
+            <div class="border border-gray-300 rounded-[8px] p-4 mb-6">
+
+                <h2 class="text-xl font-semibold mb-1">Año en curso: {{ e.current_year }}</h2>
+
+                @if (e.can_change) {
+                    <p class="text-gray-700 mb-2">
+                        Ya empezó el {{ e.real_year }}. Puedes cambiar de año para que los números
+                        vuelvan a empezar desde 0001. Las salidas de {{ e.current_year }} quedan guardadas.
+                    </p>
+
+                    @if (e.late_count > 0) {
+                        <p class="text-yellow-800 mb-3">
+                            Ya se sacaron <strong>{{ e.late_count }}</strong> número(s) del año {{ e.current_year }}
+                            dentro del {{ e.real_year }}.
+                        </p>
+                    }
+                } @else {
+                    <p class="text-gray-600 mb-3">
+                        El cambio de año se habilita cuando empiece el {{ e.current_year + 1 }}.
+                    </p>
+                }
+
+                <button type="button"
+                    (click)="abrirCambioAnio()"
+                    [disabled]="!e.can_change || cambiando()"
+                    class="bg-yellow-500 text-white rounded-[8px] h-10 px-5 hover:bg-yellow-700 disabled:opacity-40 disabled:cursor-not-allowed">
+                    Cambiar al año {{ e.real_year }}
+                </button>
+
+            </div>
+
+        }
+
+        <!-- Historial: cualquiera que llegue a esta pantalla puede consultarlo -->
+        <h2 class="text-xl font-semibold mb-3">Consultar salidas por año</h2>
+
+        <div class="flex flex-col md:flex-row gap-3 mb-4">
+
+            <select
+                (change)="seleccionarAnio(+$any($event.target).value)"
+                class="border border-gray-600 rounded-[10px] h-10 px-3 w-full md:w-48">
+                @for (anio of e.years; track anio) {
+                    <option [value]="anio" [selected]="anio === anioSeleccionado()">
+                        {{ anio }}{{ anio === e.current_year ? ' (en curso)' : '' }}
+                    </option>
+                }
+            </select>
+
+            <input type="search"
+                placeholder="Busca por número, destinatario, asunto o área"
+                [value]="busqueda()"
+                (input)="busqueda.set($any($event.target).value)"
+                class="border border-gray-500 rounded-[10px] h-10 px-3 w-full md:w-96">
+
+        </div>
+
+        @if (anioSeleccionado() !== e.current_year) {
+            <p class="text-gray-600 mb-3">Año cerrado: solo lectura.</p>
+        }
+
+<div class="border border-sky-500 min-h-[16rem]">
+
+    <table class="w-full table-fixed border-collapse text-sm xl:text-base [overflow-wrap:anywhere]">
+
+        <colgroup>
+            <col class="w-[8%]">
+            <col class="w-[8%]">
+            <col class="w-[10%]">
+            <col class="w-[16%]">
+            <col class="w-[22%]">
+            <col class="w-[14%]">
+            <col class="w-[13%]">
+            <col class="w-[9%]">
+        </colgroup>
+
+        <thead class="sticky top-0 z-10 bg-blue-100">
+            <tr class="h-12">
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Código de área</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Salida</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Fecha</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Destinatario</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Asunto</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Dependencia</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Responsable</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Estado</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @for (o of salidasFiltradas(); track o.id) {
+                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                    <td class="text-center px-2 xl:px-4 py-2">{{ o.num_area }}</td>
+                    <td class="text-center px-2 xl:px-4 py-2">{{ formatearConsecutivo(o.consecutive) }}</td>
+                    <td class="text-center px-2 xl:px-4 py-2">{{ o.date | date:'dd/MM/yyyy' }}</td>
+                    <td class="text-center px-2 xl:px-4 py-2">{{ o.addressee }}</td>
+                    <td class="text-center px-2 xl:px-4 py-2">{{ o.description }}</td>
+                    <td class="text-center px-2 xl:px-4 py-2">
+                        <div>{{ o.area }}</div>
+                        @if (o.subarea) {
+                            <div class="text-xs text-gray-500 mt-1">{{ o.subarea }}</div>
+                        }
+                    </td>
+                    <td class="text-center px-2 xl:px-4 py-2">
+                        <div>{{ o.last_edited_by || o.created_by || '—' }}</div>
+                        @if (o.last_edited_at) {
+                            <div class="text-xs text-gray-500 mt-1">{{ o.last_edited_at | date:'dd/MM/yyyy HH:mm' }}</div>
+                        }
+                    </td>
+                    <td class="text-center px-2 xl:px-4 py-2">
+                        {{ o.state === 'pendiente' ? 'Disponible' : 'Utilizado' }}
+                    </td>
+                </tr>
+            } @empty {
+                <tr>
+                    <td colspan="8" class="text-center text-gray-500 py-6">
+                        No se encontraron salidas
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+
+</div>
+
+        <!-- NUEVO: VENTANA DE ADVERTENCIA ANTES DE CAMBIAR DE AÑO -->
+        @if (modalCambio()) {
+
+            <div class="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-50">
+
+                <div class="bg-white w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-[8px] p-6">
+
+                    <h2 class="text-blue-950 text-2xl font-bold mb-3">
+                        Cambiar del {{ e.current_year }} al {{ e.real_year }}
+                    </h2>
+
+                    <p class="mb-2">Antes de continuar, ten en cuenta:</p>
+
+                    <ul class="list-disc list-inside space-y-1 mb-4">
+                        <li>Los números vuelven a empezar en <strong>0001</strong>.</li>
+                        <li>
+                            <strong>Ya no se podrán sacar más números del {{ e.current_year }}.</strong>
+                            Los que existen quedan solo para consulta (no se editan, liberan ni eliminan).
+                        </li>
+                        <li><strong>No se puede volver atrás</strong> desde la aplicación.</li>
+                        @if (e.late_count > 0) {
+                            <li>
+                                Se sacaron <strong>{{ e.late_count }}</strong> número(s) del {{ e.current_year }}
+                                dentro del {{ e.real_year }}; seguirán perteneciendo al {{ e.current_year }}.
+                            </li>
+                        }
+                    </ul>
+
+                    <label class="flex items-start gap-2 border border-yellow-300 bg-yellow-50 rounded-[8px] p-3 mb-4 cursor-pointer">
+                        <input type="checkbox"
+                            class="mt-1"
+                            [checked]="respaldoHecho()"
+                            (change)="respaldoHecho.set($any($event.target).checked)">
+                        <span>Ya hice la <strong>copia de seguridad</strong> de la base de datos de hoy.</span>
+                    </label>
+
+                    <div class="flex justify-end gap-3">
+
+                        <button type="button"
+                            (click)="cerrarCambioAnio()"
+                            class="border border-gray-400 text-gray-700 rounded-[8px] h-10 px-4 hover:bg-gray-50">
+                            Cancelar
+                        </button>
+
+                        <button type="button"
+                            (click)="confirmarCambioAnio()"
+                            [disabled]="!respaldoHecho() || cambiando()"
+                            class="bg-yellow-500 text-white rounded-[8px] h-10 px-4 hover:bg-yellow-700 disabled:opacity-40 disabled:cursor-not-allowed">
+                            Cambiar al año {{ e.real_year }}
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        }
+
+    } @else {
+        <p class="text-gray-500">Cargando...</p>
+    }
+
+</div>

@@ -1,0 +1,259 @@
+<div class="border border-gray-500 rounded-[8px] bg-white p-6 max-w-5xl mx-auto mt-6">
+
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-blue-950 text-3xl font-bold">Dependencias</h1>
+        <a routerLink="/ajustes" class="text-blue-700 hover:underline">← Volver a Ajustes</a>
+    </div>
+
+    @if (!admin.autorizado()) {
+
+        <p class="text-red-600">
+            Necesitas entrar por Ajustes con la contraseña de administrador primero.
+        </p>
+
+    } @else {
+
+        <!-- Formulario para crear -->
+        <div class="border border-gray-300 rounded-[8px] p-4 mb-6">
+
+            <h2 class="text-xl font-semibold mb-3">Nueva dependencia</h2>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+
+                <input type="text"
+                    placeholder="Nombre (ej: Talento Humano)"
+                    [value]="nombreNuevo()"
+                    (input)="nombreNuevo.set($any($event.target).value)"
+                    class="border border-gray-600 rounded-[8px] h-10 px-3 flex-1">
+
+                <input type="number"
+                    placeholder="Número (ej: 150)"
+                    [value]="numeroNuevo()"
+                    (input)="numeroNuevo.set(+$any($event.target).value)"
+                    class="border border-gray-600 rounded-[8px] h-10 px-3 w-full sm:w-40">
+
+                <button type="button"
+                    (click)="crear()"
+                    [disabled]="guardando()"
+                    class="bg-green-500 text-white rounded-[8px] h-10 px-5 hover:bg-green-700 disabled:opacity-50">
+                    Crear
+                </button>
+
+            </div>
+
+            @if (error()) {
+                <p class="text-red-600 text-sm mt-2">{{ error() }}</p>
+            }
+
+            <p class="text-gray-500 text-sm mt-2">
+                No puede repetirse ni el nombre ni el número. Si te equivocas, usa Editar.
+            </p>
+
+        </div>
+
+        <!-- Lista -->
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[700px] border-collapse">
+                <thead>
+                    <tr class="bg-blue-100 h-12">
+                        <th class="text-left px-3">Número</th>
+                        <th class="text-left px-3">Nombre</th>
+                        <th class="text-left px-3">Subáreas</th>
+                        <th class="text-left px-3">Estado</th>
+                        <th class="text-left px-3">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (dep of dependencies(); track dep.id) {
+                        <tr class="border-b border-gray-200 align-top">
+                            <td class="px-3 py-2">{{ dep.number }}</td>
+                            <td class="px-3 py-2">{{ dep.name }}</td>
+
+                            <!-- NUEVO: subáreas -->
+                            <td class="px-3 py-2">
+                                <div class="flex flex-wrap items-center gap-1">
+                                    @for (s of dep.subareas; track s.id) {
+                                        @if (s.active) {
+                                            <span class="text-xs bg-blue-50 text-blue-800 rounded-full px-2 py-0.5">{{ s.name }}</span>
+                                        } @else {
+                                            <span class="text-xs bg-gray-100 text-gray-400 line-through rounded-full px-2 py-0.5">{{ s.name }}</span>
+                                        }
+                                    }
+                                    <button type="button"
+                                        (click)="abrirSubareas(dep)"
+                                        class="text-blue-700 hover:underline text-sm ml-1">
+                                        {{ dep.subareas.length ? 'Gestionar' : 'Agregar subáreas' }}
+                                    </button>
+                                </div>
+                            </td>
+
+                            <td class="px-3 py-2">
+                                @if (dep.active) {
+                                    <span class="text-green-700">Activa</span>
+                                } @else {
+                                    <span class="text-gray-500">Inactiva</span>
+                                }
+                            </td>
+                            <td class="px-3 py-2">
+                                <div class="flex gap-4">
+                                    <button type="button"
+                                        (click)="abrirEditar(dep)"
+                                        class="text-blue-700 hover:underline">
+                                        Editar
+                                    </button>
+
+                                    <button type="button"
+                                        (click)="cambiarEstado(dep)"
+                                        class="text-gray-700 hover:underline">
+                                        {{ dep.active ? 'Desactivar' : 'Activar' }}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    }
+
+    <!-- MODAL PARA EDITAR DEPENDENCIA -->
+    @if (editando(); as dep) {
+
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-50">
+
+            <div class="bg-white w-full max-w-md rounded-[8px] p-6">
+
+                <h2 class="text-blue-950 text-2xl font-bold mb-2">Editar dependencia</h2>
+
+                <p class="text-sm text-yellow-800 bg-yellow-50 border border-yellow-200 rounded-[8px] px-3 py-2 mb-4">
+                    Si cambias el nombre o el número, también se actualizan las salidas ya creadas.
+                    Los documentos impresos conservan el número anterior.
+                </p>
+
+                <label class="block text-lg mb-1">Nombre</label>
+                <input type="text"
+                    [value]="editNombre()"
+                    (input)="editNombre.set($any($event.target).value)"
+                    class="border border-gray-600 rounded-[8px] h-10 w-full px-3 mb-4">
+
+                <label class="block text-lg mb-1">Número</label>
+                <input type="number"
+                    [value]="editNumero()"
+                    (input)="editNumero.set(+$any($event.target).value)"
+                    class="border border-gray-600 rounded-[8px] h-10 w-full px-3">
+
+                @if (errorEdicion()) {
+                    <p class="text-red-600 text-sm mt-2">{{ errorEdicion() }}</p>
+                }
+
+                <div class="flex justify-end gap-3 mt-5">
+
+                    <button type="button"
+                        (click)="cerrarEditar()"
+                        class="bg-red-500 text-white rounded-[8px] h-10 px-4 hover:bg-red-700">
+                        Cancelar
+                    </button>
+
+                    <button type="button"
+                        (click)="guardarEdicion()"
+                        [disabled]="guardando()"
+                        class="bg-green-500 text-white rounded-[8px] h-10 px-4 hover:bg-green-700 disabled:opacity-50">
+                        Guardar
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    }
+
+    <!-- NUEVO: MODAL DE SUBÁREAS -->
+    @if (subDe(); as dep) {
+
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-50">
+
+            <div class="bg-white w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-[8px] p-6">
+
+                <h2 class="text-blue-950 text-2xl font-bold">Subáreas de {{ dep.name }}</h2>
+                <p class="text-gray-600 mb-4">
+                    Usan el mismo código de la dependencia ({{ dep.number }}).
+                </p>
+
+                <div class="flex gap-2 mb-2">
+                    <input type="text"
+                        placeholder="Nueva subárea (ej: Tesorería)"
+                        maxlength="255"
+                        [value]="nombreSub()"
+                        (input)="nombreSub.set($any($event.target).value)"
+                        (keyup.enter)="crearSubarea()"
+                        class="border border-gray-600 rounded-[8px] h-10 px-3 flex-1">
+
+                    <button type="button"
+                        (click)="crearSubarea()"
+                        [disabled]="guardando()"
+                        class="bg-green-500 text-white rounded-[8px] h-10 px-4 hover:bg-green-700 disabled:opacity-50">
+                        Agregar
+                    </button>
+                </div>
+
+                @if (errorSub()) {
+                    <p class="text-red-600 text-sm mb-2">{{ errorSub() }}</p>
+                }
+
+                <div class="mt-3">
+                    @for (s of dep.subareas; track s.id) {
+                        <div class="flex items-center justify-between gap-2 border-b border-gray-200 py-2">
+
+                            @if (subEditId() === s.id) {
+
+                                <input type="text"
+                                    maxlength="255"
+                                    [value]="subEditNombre()"
+                                    (input)="subEditNombre.set($any($event.target).value)"
+                                    (keyup.enter)="guardarSub(s)"
+                                    class="border border-gray-600 rounded-[8px] h-9 px-3 flex-1">
+
+                                <div class="flex gap-3 text-sm">
+                                    <button type="button" (click)="guardarSub(s)" class="text-green-700 hover:underline">Guardar</button>
+                                    <button type="button" (click)="cancelarEditarSub()" class="text-gray-600 hover:underline">Cancelar</button>
+                                </div>
+
+                            } @else {
+
+                                <span [class.text-gray-400]="!s.active" [class.line-through]="!s.active">
+                                    {{ s.name }}
+                                </span>
+
+                                <div class="flex gap-3 text-sm">
+                                    <button type="button" (click)="empezarEditarSub(s)" class="text-blue-700 hover:underline">Editar</button>
+                                    <button type="button" (click)="cambiarEstadoSub(s)" class="text-gray-700 hover:underline">
+                                        {{ s.active ? 'Desactivar' : 'Activar' }}
+                                    </button>
+                                </div>
+
+                            }
+
+                        </div>
+                    } @empty {
+                        <p class="text-gray-500 py-2">Esta dependencia todavía no tiene subáreas.</p>
+                    }
+                </div>
+
+                <div class="flex justify-end mt-5">
+                    <button type="button"
+                        (click)="cerrarSubareas()"
+                        class="bg-blue-700 text-white rounded-[8px] h-10 px-4 hover:bg-blue-900">
+                        Cerrar
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    }
+
+</div>

@@ -1,122 +1,268 @@
 <div>
-    <div class="border border-gray-650 bg-white p-4 h-fit w-full max-w-[1480px] mx-auto mt-2">
+    <div class="border border-gray-650 bg-white p-4 h-fit w-full max-w-[92rem] mx-auto mt-2">
 
-        <h1 class="text-blue-950 text-3xl font-bold ml-4 md:ml-20 mt-3">
-            Números de salida internos o externos
-        </h1>
+        <!-- ENCABEZADO -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 md:px-10 pt-3">
+            <div>
+                <h1 class="text-blue-950 text-2xl xl:text-3xl font-bold">
+                    Números de salida internos o externos
+                </h1>
 
-        <h2 class="text-gray-800 text-2xl ml-4 md:ml-20 mt-3">
-            Consulta y gestión de los números generados
-        </h2>
+                <h2 class="text-gray-800 text-xl mt-1">
+                    Consulta y gestión de los números generados
+                </h2>
 
-        <img src="/logoemquilichao.png" alt="" class="w-32 md:w-50 ml-auto mr-4 md:mr-10 -mt-2 md:-mt-22 mb-6">
+                <p class="text-blue-800 mt-1">
+                    @if (anioActual(); as anio) {
+                    Año en curso: <strong>{{ anio }}</strong>
+                    }
+                    <span class="ml-4">Disponibles: <strong>{{ totalDisponibles() }}</strong></span>
+                    @if (ultimaCarga(); as hora) {
+                    <span class="ml-4 text-sm text-gray-500" title="La lista se actualiza sola cada 10 segundos">
+                        Actualizado {{ hora | date:'HH:mm:ss' }}
+                    </span>
+                    }
+                </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 lg:gap-4 self-start lg:self-auto">
+                <a routerLink="/informe"
+                    class="flex items-center gap-2 border border-blue-700 text-blue-700 rounded-[10px] h-12 px-4 hover:bg-blue-50">
+                    🖨️ Informe
+                </a>
+
+                <a routerLink="/new-number"
+                    class="flex items-center gap-2 bg-green-500 text-white text-lg font-semibold rounded-[10px] h-12 px-6 shadow hover:bg-green-700 hover:-translate-y-0.5 transition">
+                    <span class="text-3xl -mt-1">+</span>
+                    Nuevo número
+                </a>
+
+                <a routerLink="/ajustes" class="text-3xl" title="Ajustes">⚙️</a>
+
+                <img src="/logoemquilichao.png" alt="Logo Emquilichao" class="w-28 md:w-40">
+
+            </div>
+
+        </div>
 
 
-        <div class="border border-gray-650 bg-white h-fit pb-15">
+        <!-- NUEVO: AVISO DE NUEVO AÑO (solo aparece si ya empezó el año nuevo y el administrador no ha cambiado) -->
+        @if (estadoAnio(); as e) {
+        @if (e.can_change) {
+
+        @if (!avisoCompacto()) {
+
+        <div class="mx-4 md:mx-10 mt-4 rounded-[10px] border border-yellow-400 bg-yellow-50 p-4">
+            <p class="text-yellow-900 font-semibold text-lg">
+                Ya empezó el año {{ e.real_year }}
+            </p>
+            <p class="text-yellow-900 mt-1">
+                Los números siguen saliendo del año <strong>{{ e.current_year }}</strong>
+                hasta que el administrador cambie de año.
+            </p>
+
+            <div class="flex flex-wrap gap-3 mt-3">
+                <button type="button" (click)="abrirGuiaAnio()"
+                    class="bg-yellow-500 text-white font-semibold rounded-[8px] h-10 px-4 hover:bg-yellow-700">
+                    Cambiar de año
+                </button>
+
+                <button type="button" (click)="seguirEnAnio()"
+                    class="border border-yellow-600 text-yellow-900 rounded-[8px] h-10 px-4 hover:bg-yellow-100">
+                    Seguir en {{ e.current_year }}
+                </button>
+            </div>
+        </div>
+
+        } @else {
+
+        <div
+            class="mx-4 md:mx-10 mt-4 rounded-[8px] border border-yellow-300 bg-yellow-50 px-4 py-2 text-sm text-yellow-900 flex flex-wrap items-center justify-between gap-2">
+            <span>
+                Estás sacando números del año <strong>{{ e.current_year }}</strong>
+                (ya empezó el {{ e.real_year }}).
+            </span>
+            <button type="button" (click)="abrirGuiaAnio()" class="underline hover:no-underline">
+                Cómo cambiar de año
+            </button>
+        </div>
+
+        }
+
+        }
+        }
+
+
+        <div class="border border-gray-650 bg-white h-fit pb-10 mt-4">
 
             <!-- FILTROS -->
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-4 md:px-10 pt-8">
+            <!-- FILTROS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row lg:items-center gap-3 px-4 md:px-10 pt-6">
 
-                <input type="search" placeholder="Busca por número, destinatario o asunto"
+                <select (change)="campoBusqueda.set($any($event.target).value)"
+                    class="border border-gray-600 rounded-[10px] h-10 px-3 w-full lg:w-48"
+                    title="Elige en qué campo buscar">
+                    <option value="todos">Buscar en todo</option>
+                    <option value="numero">Número de salida</option>
+                    <option value="destinatario">Destinatario</option>
+                    <option value="asunto">Asunto</option>
+                </select>
+
+                <!-- En pantallas pequeñas el buscador sube a la primera fila y ocupa todo el ancho -->
+                <input type="search" [placeholder]="placeholderBusqueda()"
                     (input)="busqueda.set($any($event.target).value)"
-                    class="border border-gray-500 rounded-[10px] h-10 px-3 w-full md:w-96">
+                    class="border border-gray-500 rounded-[10px] h-10 px-3 w-full order-first sm:col-span-2 lg:order-none lg:col-span-1 lg:flex-1 lg:min-w-[12rem]">
 
-                <select
-                    (change)="areaFiltro.set($any($event.target).value)"
-                    class="border border-gray-600 rounded-[10px] h-10 px-3 w-full md:w-72">
+                <select (change)="areaFiltro.set($any($event.target).value)"
+                    class="border border-gray-600 rounded-[10px] h-10 px-3 w-full lg:w-72">
 
                     <option value="">Todas las áreas</option>
 
-                    @for (area of areas; track area.numero) {
-                        <option [value]="area.numero">
-                            {{ area.nombre }} - {{ area.numero }}
-                        </option>
+                    @for (area of areas(); track area.id) {
+                    <option [value]="area.number">
+                        {{ area.name }} - {{ area.number }}
+                    </option>
                     }
 
                 </select>
 
-            </div>
+                <select (change)="estadoFiltro.set($any($event.target).value)"
+                    class="border border-gray-600 rounded-[10px] h-10 px-3 w-full lg:w-44">
+                    <option value="">Todos los estados</option>
+                    <option value="pendiente">Disponibles</option>
+                    <option value="utilizado">Utilizados</option>
+                </select>
 
+            </div>
             <!-- TABLA -->
-            <div class="border border-sky-500 w-full h-100 mt-3 overflow-x-auto">
+<!-- TABLA -->
+<!-- CAMBIO: sin barra lateral ni altura fija. La tabla se ajusta al ancho y la página sube y baja -->
+<div class="border border-sky-500 w-full mt-4 min-h-[20rem]">
 
-                <table class="w-full min-w-[900px] border-collapse">
+    <table class="w-full table-fixed border-collapse text-sm xl:text-base [overflow-wrap:anywhere]">
 
-                    <thead>
-                        <tr class="bg-blue-100 h-13">
-                            <th class="text-blue-800 font-bold text-center px-4 py-2">Código de área</th>
-                            <th class="text-blue-800 font-bold text-center px-4 py-2">Salida</th>
-                            <th class="text-blue-800 font-bold text-center px-4 py-2">Fecha</th>
-                            <th class="text-blue-800 font-bold text-center px-4 py-2">Destinatario</th>
-                            <th class="text-blue-800 font-bold text-center px-4 py-2">Asunto</th>
-                            <th class="text-blue-800 font-bold text-center px-4 py-2">Dependencia</th>
-                            <th class="text-blue-800 font-bold text-center px-4 py-2">Acciones</th>
-                        </tr>
-                    </thead>
+        <colgroup>
+            <col class="w-[7%]">
+            <col class="w-[7%]">
+            <col class="w-[10%]">
+            <col class="w-[13%]">
+            <col class="w-[16%]">
+            <col class="w-[12%]">
+            <col class="w-[13%]">
+            <col class="w-[11%]">
+            <col class="w-[11%]">
+        </colgroup>
 
-                    <tbody>
-                        @for (outbound of outboundsFiltrados(); track outbound.id) {
-                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+        <thead class="sticky top-0 z-10 bg-blue-100">
+            <tr class="h-13">
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Código de área</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Salida</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Fecha</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Destinatario</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Asunto</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Dependencia</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Responsable</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Estado</th>
+                <th class="text-blue-800 font-bold text-center px-2 xl:px-4 py-2">Acciones</th>
+            </tr>
+        </thead>
 
-                                <td class="text-center px-4 py-2">{{ outbound.num_area }}</td>
-                                <td class="text-center px-4 py-2">{{ outbound.consecutive }}</td>
-                                <td class="text-center px-4 py-2">{{ outbound.date | date:'dd/MM/yyyy' }}</td>
-                                <td class="text-center px-4 py-2">{{ outbound.addressee }}</td>
-                                <td class="text-center px-4 py-2">{{ outbound.description }}</td>
-                                <td class="text-center px-4 py-2">{{ outbound.area }}</td>
+        <tbody>
+            @for (outbound of outboundsFiltrados(); track outbound.id) {
+                <tr class="border-b border-gray-200 hover:bg-gray-50">
 
-                                <!-- ACCIONES -->
-                                <td class="text-center px-4 py-2">
-                                    <div class="flex items-center justify-center gap-4">
+                    <td class="text-center px-2 xl:px-4 py-2">{{ outbound.num_area }}</td>
+                    <td class="text-center px-2 xl:px-4 py-2">{{ formatearConsecutivo(outbound.consecutive) }}</td>
+                    <td class="text-center px-2 xl:px-4 py-2">{{ outbound.date | date:'dd/MM/yyyy' }}</td>
+                    <td class="text-center px-2 xl:px-4 py-2">{{ outbound.addressee }}</td>
+                    <td class="text-center px-2 xl:px-4 py-2">{{ outbound.description }}</td>
 
-                                        <button type="button"
-                                            (click)="abrirEditar(outbound)"
-                                            class="text-blue-700 hover:underline">
-                                            Editar
-                                        </button>
-
-                                     
-
-                                    </div>
-                                </td>
-
-                            </tr>
-                        } @empty {
-                            <tr>
-                                <td colspan="7" class="text-center text-gray-500 py-6">
-                                    No se encontraron resultados
-                                </td>
-                            </tr>
+                    <td class="text-center px-2 xl:px-4 py-2">
+                        <div>{{ outbound.area }}</div>
+                        @if (outbound.subarea) {
+                            <div class="text-xs text-gray-500 mt-1">{{ outbound.subarea }}</div>
                         }
-                    </tbody>
+                    </td>
 
-                </table>
+                    <td class="text-center px-2 xl:px-4 py-2">
+                        <div>{{ outbound.last_edited_by || outbound.created_by || '—' }}</div>
+                        @if (outbound.last_edited_at) {
+                            <div class="text-xs text-gray-500 mt-1" title="Última modificación">
+                                {{ outbound.last_edited_at | date:'dd/MM/yyyy HH:mm' }}
+                            </div>
+                        }
+                    </td>
 
-            </div>
+                    <td class="text-center px-2 xl:px-4 py-2">
+                        @if (outbound.state === 'pendiente') {
+                            <span class="inline-flex flex-wrap items-center justify-center gap-1.5 rounded-full bg-yellow-100 text-yellow-800 px-2.5 xl:px-3 py-1 text-sm font-semibold">
+                                <span class="hidden xl:inline-block w-2 h-2 rounded-full bg-yellow-500"></span>
+                                Disponible
+                            </span>
+                        } @else {
+                            <span class="inline-flex flex-wrap items-center justify-center gap-1.5 rounded-full bg-green-100 text-green-800 px-2.5 xl:px-3 py-1 text-sm font-semibold">
+                                <span class="hidden xl:inline-block w-2 h-2 rounded-full bg-green-600"></span>
+                                Utilizado
+                            </span>
+                        }
+                    </td>
 
+                    <!-- ACCIONES -->
+                    <td class="text-center px-2 xl:px-4 py-2">
+                        <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
 
-            <!-- BOTONES INFERIORES -->
-            <div class="flex flex-col md:flex-row my-15 gap-4">
+                            @if (outbound.state === 'pendiente') {
+                                <button type="button"
+                                    (click)="abrirUsar(outbound)"
+                                    class="text-green-700 font-semibold hover:underline">
+                                    Usar este número
+                                </button>
+                            } @else if (admin.autorizado()) {
+                                <button type="button"
+                                    (click)="liberarNumero(outbound)"
+                                    title="Lo deja disponible para que otra persona lo use"
+                                    class="text-yellow-700 hover:underline">
+                                    Liberar
+                                </button>
+                            }
 
-                <div class="bg-white border border-sky-500 w-40 rounded-[8px] ml-4">
+                            @if (puedeEditar(outbound)) {
+                                <button type="button"
+                                    (click)="abrirEditar(outbound)"
+                                    class="text-blue-700 hover:underline">
+                                    Editar
+                                    @if (!admin.autorizado()) {
+                                        (quedan {{ edicionesRestantes(outbound) }})
+                                    }
+                                </button>
+                            } @else {
+                                <span class="text-gray-400" title="Ya se usaron las 2 ediciones permitidas">
+                                    Edición agotada
+                                </span>
+                            }
 
-                    <a href="" class="flex mt-1">
-                        <img src="/Flecha.png" alt="" class="w-5 h-5 mr-2 ml-2 mt-1">
-                        Devolver inicio
-                    </a>
+                            <button type="button"
+                                (click)="verHistorial(outbound)"
+                                class="text-gray-600 hover:underline">
+                                Historial
+                            </button>
 
-                </div>
+                        </div>
+                    </td>
 
-                <div class="bg-green-500 rounded-[8px] w-40 ml-4 md:ml-auto hover:bg-green-900 hover:-translate-y-1">
+                </tr>
+            } @empty {
+                <tr>
+                    <td colspan="9" class="text-center text-gray-500 py-6">
+                        No se encontraron resultados
+                    </td>
+                </tr>
+            }
+        </tbody>
 
-                    <a routerLink="/new-number" class="flex items-center gap-1 text-white">
-                        <span class="text-3xl -mt-1">+</span>
-                        Nuevo número
-                    </a>
+    </table>
 
-                </div>
-
-            </div>
+</div>
 
         </div>
 
@@ -126,50 +272,275 @@
     <!-- MODAL PARA EDITAR -->
     @if (editando(); as salida) {
 
-        <div class="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-50">
+    <div class="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-50">
 
-            <div class="bg-white w-full max-w-lg rounded-[8px] p-6">
+<div class="bg-white w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-[8px] p-6">
+            <h2 class="text-blue-950 text-2xl font-bold">
+                Editar salida N° {{ formatearConsecutivo(salida.consecutive) }}
+            </h2>
 
-                <h2 class="text-blue-950 text-2xl font-bold">
-                    Editar salida N° {{ salida.consecutive }}
-                </h2>
+            <p class="text-gray-600 mb-2">
+                {{ salida.area }}{{ salida.subarea ? ' · ' + salida.subarea : '' }} - {{ salida.num_area }}
+            </p>
 
-                <p class="text-gray-600 mb-4">
-                    {{ salida.area }} - {{ salida.num_area }}
-                </p>
+            @if (!admin.autorizado()) {
+            <p class="text-sm text-yellow-800 bg-yellow-50 border border-yellow-200 rounded-[8px] px-3 py-2 mb-4">
+                Te quedan <strong>{{ edicionesRestantes(salida) }}</strong> de 2 ediciones para este número.
+                Cada cambio queda registrado.
+            </p>
+            }
 
-                <label class="block text-lg mb-1">Destinatario</label>
-                <input type="text"
-                    [value]="editDestinatario()"
-                    (input)="editDestinatario.set($any($event.target).value)"
-                    class="border border-gray-600 rounded-[8px] h-10 w-full px-3 mb-4">
+            <label class="block text-lg mb-1">Destinatario</label>
+            <input type="text" [value]="editDestinatario()" (input)="editDestinatario.set($any($event.target).value)"
+                class="border border-gray-600 rounded-[8px] h-10 w-full px-3 mb-4">
 
-                <label class="block text-lg mb-1">Asunto</label>
-                <textarea
-                    [value]="editAsunto()"
-                    (input)="editAsunto.set($any($event.target).value)"
-                    class="border border-gray-600 rounded-[8px] w-full h-32 px-3 py-2 resize-none"></textarea>
+            <label class="block text-lg mb-1">Asunto</label>
+            <textarea [value]="editAsunto()" (input)="editAsunto.set($any($event.target).value)"
+                class="border border-gray-600 rounded-[8px] w-full h-32 px-3 py-2 resize-none mb-4"></textarea>
 
-                <div class="flex justify-end gap-3 mt-5">
+            <label class="block text-lg mb-1">¿Quién hace el cambio?</label>
+            <input type="text" placeholder="Escribe tu nombre" maxlength="100" [value]="editNombre()"
+                (input)="editNombre.set($any($event.target).value)"
+                class="border border-gray-600 rounded-[8px] h-10 w-full px-3">
 
-                    <button type="button"
-                        (click)="cerrarEditar()"
-                        class="bg-red-500 text-white rounded-[8px] h-10 px-4 hover:bg-red-700">
-                        Cancelar
-                    </button>
+            <div class="flex justify-end gap-3 mt-5">
 
-                    <button type="button"
-                        (click)="guardarEdicion()"
-                        [disabled]="guardando() || !editDestinatario().trim() || !editAsunto().trim()"
-                        class="bg-green-500 text-white rounded-[8px] h-10 px-4 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Guardar
-                    </button>
+                <button type="button" (click)="cerrarEditar()"
+                    class="bg-red-500 text-white rounded-[8px] h-10 px-4 hover:bg-red-700">
+                    Cancelar
+                </button>
 
-                </div>
+                <button type="button" (click)="guardarEdicion()"
+                    [disabled]="guardando() || !editDestinatario().trim() || !editAsunto().trim() || !editNombre().trim()"
+                    class="bg-green-500 text-white rounded-[8px] h-10 px-4 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Guardar
+                </button>
 
             </div>
 
         </div>
+
+    </div>
+
+    }
+
+
+    <!-- CAMBIO: MODAL DE HISTORIAL EN TABLA (Cambio / Antes / Después) -->
+    @if (historialDe(); as salida) {
+
+    <div class="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-50">
+
+        <div class="bg-white w-full max-w-3xl max-h-[85vh] overflow-y-auto rounded-[8px] p-6">
+
+            <h2 class="text-blue-950 text-2xl font-bold mb-1">
+                Historial de la salida N° {{ formatearConsecutivo(salida.consecutive) }}
+            </h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                Lo resaltado en amarillo es lo que cambió. Lo demás se mantuvo igual.
+            </p>
+
+            @if (historial(); as h) {
+
+            @for (e of h.events; track e.id) {
+
+            <div class="border border-gray-300 rounded-[8px] mb-4 overflow-hidden">
+
+                <div class="bg-gray-50 px-4 py-2 border-b border-gray-300">
+                    <span class="font-semibold">{{ e.title }}</span>
+                    <span class="text-sm text-gray-600">
+                        · {{ e.at | date:'dd/MM/yyyy HH:mm' }} · {{ e.by || 'Sin nombre' }}
+                    </span>
+                </div>
+
+                <table class="w-full text-sm border-collapse">
+                    <thead>
+                        <tr class="text-left text-gray-500">
+                            <th class="px-4 py-1 w-1/4 font-medium">Cambio</th>
+                            <th class="px-4 py-1 w-3/8 font-medium">Antes</th>
+                            <th class="px-4 py-1 w-3/8 font-medium">Después</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (r of e.rows; track r.label) {
+                        <tr class="border-t border-gray-200" [class.bg-yellow-50]="r.changed">
+                            <td class="px-4 py-2 font-medium">{{ r.label }}</td>
+                            <td class="px-4 py-2" [class.text-gray-500]="!r.changed" [class.font-semibold]="r.changed">
+                                {{ r.before }}</td>
+                            <td class="px-4 py-2" [class.text-gray-500]="!r.changed" [class.font-semibold]="r.changed">
+                                {{ r.after }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+
+            } @empty {
+            <p class="text-gray-500 mb-4">Este número no ha tenido cambios.</p>
+            }
+
+            <!-- Datos con los que nació el número -->
+            <div class="border border-gray-300 rounded-[8px] overflow-hidden">
+
+                <div class="bg-gray-50 px-4 py-2 border-b border-gray-300">
+                    <span class="font-semibold">Creación</span>
+                    <span class="text-sm text-gray-600">
+                        @if (h.creation.at) {
+                        · {{ h.creation.at | date:'dd/MM/yyyy HH:mm' }}
+                        }
+                        · {{ h.creation.by || 'Sin nombre' }}
+                    </span>
+                </div>
+
+                <table class="w-full text-sm border-collapse">
+                    <tbody>
+                        @for (r of h.creation.rows; track r.label) {
+                        <tr class="border-t border-gray-200 first:border-t-0">
+                            <td class="px-4 py-2 font-medium w-1/4">{{ r.label }}</td>
+                            <td class="px-4 py-2">{{ r.value }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+
+            } @else {
+            <p class="text-gray-500">Cargando...</p>
+            }
+
+            <div class="flex justify-end mt-5">
+                <button type="button" (click)="cerrarHistorial()"
+                    class="bg-blue-700 text-white rounded-[8px] h-10 px-4 hover:bg-blue-900">
+                    Cerrar
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    }
+
+
+    <!-- MODAL PARA USAR UN NÚMERO DISPONIBLE -->
+    @if (usando(); as salida) {
+
+    <div class="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-50">
+
+        <div class="bg-white w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-[8px] p-6">
+
+            <h2 class="text-blue-950 text-2xl font-bold">
+                Usar la salida N° {{ formatearConsecutivo(salida.consecutive) }}
+            </h2>
+
+            <p class="text-sm text-yellow-800 bg-yellow-50 border border-yellow-200 rounded-[8px] px-3 py-2 my-3">
+                Este número estaba disponible. Revisa y corrige <strong>todos</strong> los datos:
+                pertenecen al uso anterior.
+            </p>
+
+            <label class="block text-lg mb-1">Dependencia</label>
+            <select (change)="cambiarUsoArea(+$any($event.target).value)"
+                class="border border-gray-600 rounded-[8px] h-10 w-full px-2 mb-4">
+                @for (a of areasActivas(); track a.id) {
+                <option [value]="a.number" [selected]="a.number === usoArea()">
+                    {{ a.name }} - {{ a.number }}
+                </option>
+                }
+            </select>
+
+            @if (usoSubareasActivas().length > 0) {
+            <label class="block text-lg mb-1">
+                Subárea <span class="text-gray-500 text-base">(opcional)</span>
+            </label>
+            <select (change)="usoSubarea.set($any($event.target).value)"
+                class="border border-gray-600 rounded-[8px] h-10 w-full px-2 mb-4">
+                <option value="" [selected]="!usoSubarea()">Sin subárea (general)</option>
+                @for (s of usoSubareasActivas(); track s.id) {
+                <option [value]="s.name" [selected]="s.name === usoSubarea()">{{ s.name }}</option>
+                }
+            </select>
+            }
+
+            <label class="block text-lg mb-1">Destinatario</label>
+            <input type="text" [value]="usoDestinatario()" (input)="usoDestinatario.set($any($event.target).value)"
+                class="border border-gray-600 rounded-[8px] h-10 w-full px-3 mb-4">
+
+            <label class="block text-lg mb-1">Asunto</label>
+            <textarea [value]="usoAsunto()" (input)="usoAsunto.set($any($event.target).value)"
+                class="border border-gray-600 rounded-[8px] w-full h-28 px-3 py-2 resize-none mb-4"></textarea>
+
+            <label class="block text-lg mb-1">¿Quién lo va a usar?</label>
+            <input type="text" placeholder="Escribe tu nombre" maxlength="100" [value]="usoNombre()"
+                (input)="usoNombre.set($any($event.target).value)"
+                class="border border-gray-600 rounded-[8px] h-10 w-full px-3">
+
+            <div class="flex justify-end gap-3 mt-5">
+
+                <button type="button" (click)="cerrarUsar()"
+                    class="bg-red-500 text-white rounded-[8px] h-10 px-4 hover:bg-red-700">
+                    Cancelar
+                </button>
+
+                <button type="button" (click)="confirmarUso()"
+                    [disabled]="tomando() || usoArea() === null || !usoDestinatario().trim() || !usoAsunto().trim() || !usoNombre().trim()"
+                    class="bg-green-500 text-white rounded-[8px] h-10 px-4 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Usar este número
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    }
+
+
+    <!-- NUEVO: GUÍA PARA CAMBIAR DE AÑO -->
+    @if (guiaAnio()) {
+
+    <div class="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-50">
+
+<div class="bg-white w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-[8px] p-6">
+            <h2 class="text-blue-950 text-2xl font-bold mb-2">Cómo cambiar de año</h2>
+
+            <p class="text-sm text-yellow-800 bg-yellow-50 border border-yellow-200 rounded-[8px] px-3 py-2 mb-4">
+                Esto solo lo puede hacer el <strong>administrador</strong>, desde la pantalla de Ajustes.
+            </p>
+
+            <ol class="list-decimal list-inside space-y-2 mb-4">
+                <li>Toca el ícono ⚙️ <strong>Ajustes</strong> (arriba a la derecha).</li>
+                <li>Escribe la <strong>contraseña de administrador</strong> y pulsa Entrar.</li>
+                <li>Entra a <strong>📅 Gestión de años</strong>.</li>
+                <li>
+                    Pulsa <strong>Cambiar al año {{ estadoAnio()?.real_year }}</strong> y confirma.
+                </li>
+            </ol>
+
+            <p class="text-sm text-gray-600 mb-4">
+                Antes de cambiar, haz la copia de seguridad. Después del cambio, los números vuelven a
+                empezar en 0001 y ya no se podrán sacar más números de {{ estadoAnio()?.current_year }}.
+            </p>
+
+            <div class="flex justify-end gap-3">
+
+                <button type="button" (click)="cerrarGuiaAnio()"
+                    class="border border-gray-400 text-gray-700 rounded-[8px] h-10 px-4 hover:bg-gray-50">
+                    Cerrar
+                </button>
+
+                <a routerLink="/ajustes" (click)="cerrarGuiaAnio()"
+                    class="flex items-center bg-blue-700 text-white rounded-[8px] h-10 px-4 hover:bg-blue-900">
+                    Ir a Ajustes
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
 
     }
 

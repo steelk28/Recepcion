@@ -1,0 +1,68 @@
+<div class="border border-gray-500 rounded-[8px] bg-white p-6 max-w-2xl mx-auto mt-6">
+
+    <!-- CAMBIO 1: título con botón de volver al inicio -->
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-blue-950 text-3xl font-bold">Ajustes</h1>
+        <a routerLink="/home" class="text-blue-700 hover:underline">← Volver al inicio</a>
+    </div>
+
+    @if (!autorizado()) {
+
+        <div class="max-w-sm">
+
+            <p class="text-gray-600 mb-4">
+                Esta sección es solo para administradores.
+            </p>
+
+            <input type="password"
+                placeholder="Contraseña de administrador"
+                [value]="passwordEscrita()"
+                (input)="passwordEscrita.set($any($event.target).value)"
+                (keyup.enter)="entrar()"
+                class="border border-gray-600 rounded-[8px] h-10 w-full px-3 mb-2">
+
+            @if (error()) {
+                <p class="text-red-600 text-sm mb-2">{{ error() }}</p>
+            }
+
+            <div class="flex items-center gap-3">
+                <button type="button"
+                    (click)="entrar()"
+                    [disabled]="verificando()"
+                    class="bg-blue-700 text-white rounded-[8px] h-10 px-4 hover:bg-blue-900 disabled:opacity-50">
+                    Entrar
+                </button>
+
+                <!-- CAMBIO 2: también se puede volver sin poner contraseña -->
+                <a routerLink="/home" class="text-gray-600 hover:underline">Cancelar</a>
+            </div>
+
+        </div>
+
+    } @else {
+
+        <div class="flex flex-col gap-3 max-w-sm">
+
+<a routerLink="/dependencias"
+   class="flex items-center gap-2 border border-gray-400 rounded-[8px] p-4 hover:bg-gray-50">
+    <img src="/empresa.png" alt="Dependencias" class="w-6 h-6">
+    Dependencias
+</a>
+
+<a routerLink="/anios"
+   class="flex items-center gap-2 border border-gray-400 rounded-[8px] p-4 hover:bg-gray-50">
+    <img src="/calendario.png" alt="Gestión de años" class="w-6 h-6">
+    Gestión de años
+</a>
+
+            <button type="button"
+                (click)="salir()"
+                class="text-red-600 text-left mt-4 hover:underline">
+                Cerrar sesión de administrador
+            </button>
+
+        </div>
+
+    }
+
+</div>

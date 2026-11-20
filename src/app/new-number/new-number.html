@@ -20,6 +20,15 @@
         >
 
     </div>
+    <!-- AVISO: ya empezó el año nuevo pero el administrador no ha cambiado -->
+@if (estadoAnio(); as e) {
+    @if (e.can_change) {
+        <div class="max-w-5xl mx-auto mt-6 rounded-[8px] border border-yellow-400 bg-yellow-50 px-4 py-3 text-yellow-900">
+            Ya estamos en {{ e.real_year }}, pero este número saldrá del año
+            <strong>{{ e.current_year }}</strong> porque el administrador todavía no cambió de año.
+        </div>
+    }
+}
 
 
     <!-- ÁREA Y NÚMERO DE ÁREA -->
@@ -31,17 +40,19 @@
                 Área
             </h1>
 
+            <!-- CAMBIO 1: se quitó [value]="areaSeleccionada.numero" y ahora cada <option> usa [selected] -->
             <select
-               class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
-    [value]="areaSeleccionada.numero"
-    (change)="cambiarArea(+$any($event.target).value)"
+                class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
+                (change)="cambiarArea(+$any($event.target).value)"
             >
 
-  @for (area of areas; track area.numero) {
-        <option [value]="area.numero">
-            {{ area.nombre }} - {{ area.numero }}
-        </option>
-            }
+                <!-- CAMBIO 2: areas -> areas(), area.numero -> area.number, area.nombre -> area.name -->
+                @for (area of areas(); track area.id) {
+                    <option [value]="area.number"
+                        [selected]="area.number === areaSeleccionada()?.number">
+                        {{ area.name }} - {{ area.number }}
+                    </option>
+                }
 
             </select>
         </div>
@@ -53,25 +64,73 @@
                 Número de área
             </h1>
 
+            <!-- CAMBIO 3: este select ahora también llama a cambiarArea() (cambiarNumeroArea() ya no existe) -->
             <select
-             class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
-    [value]="numeroArea"
-    (change)="cambiarNumeroArea(+$any($event.target).value)"
+                class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
+                (change)="cambiarArea(+$any($event.target).value)"
             >
 
-               @for (area of areas; track area.numero) {
-        <option [value]="area.numero">
-            {{ area.numero }}
-        </option>
-            }
- 
-         
-
+                @for (area of areas(); track area.id) {
+                    <option [value]="area.number"
+                        [selected]="area.number === areaSeleccionada()?.number">
+                        {{ area.number }}
+                    </option>
+                }
 
             </select>
         </div>
 
     </div>
+
+    <!-- SUBÁREA: solo aparece si la dependencia tiene subáreas activas -->
+@if (subareasActivas().length > 0) {
+    <div class="max-w-5xl mx-auto mt-8">
+
+        <h1 class="mb-2 text-xl md:text-2xl">
+            Subárea <span class="text-gray-500 text-base">(opcional)</span>
+        </h1>
+
+        <select
+            class="border border-gray-600 rounded-[8px] h-10 w-full px-2"
+            (change)="subareaSeleccionada.set($any($event.target).value)">
+
+            <option value="" [selected]="!subareaSeleccionada()">Sin subárea (general)</option>
+
+            @for (s of subareasActivas(); track s.id) {
+                <option [value]="s.name" [selected]="s.name === subareaSeleccionada()">
+                    {{ s.name }}
+                </option>
+            }
+
+        </select>
+
+    </div>
+}
+
+    <!-- CREADO POR -->
+<div class="max-w-5xl mx-auto mt-8">
+
+    <h1 class="text-xl md:text-2xl mb-2">
+        ¿Quién crea este número?
+    </h1>
+
+    <input
+        type="text"
+        list="lista-creadores"
+        placeholder="Escribe tu nombre"
+        maxlength="100"
+        class="border border-gray-600 rounded-[8px] h-10 w-full px-3"
+        [(ngModel)]="creador"
+    >
+
+    <!-- Las sugerencias salen de los nombres ya usados -->
+    <datalist id="lista-creadores">
+        @for (nombre of creadores(); track nombre) {
+            <option [value]="nombre"></option>
+        }
+    </datalist>
+
+</div>
 
 
     <!-- DESTINATARIO -->
@@ -82,10 +141,10 @@
         </h1>
 
         <input
-             type="text"
-    placeholder="Escribe el destinatario"
-    class="border border-gray-600 rounded-[8px] h-10 w-full px-3"
-    [(ngModel)]="destinatario"
+            type="text"
+            placeholder="Escribe el destinatario"
+            class="border border-gray-600 rounded-[8px] h-10 w-full px-3"
+            [(ngModel)]="destinatario"
         >
 
     </div>
@@ -98,11 +157,11 @@
             Asunto
         </h1>
 
-      <textarea
-    placeholder="Escribe el asunto"
-    class="border border-gray-600 rounded-[8px] w-full h-40 md:h-56 px-3 py-2 resize-none"
-    [(ngModel)]="asunto"
-></textarea>
+        <textarea
+            placeholder="Escribe el asunto"
+            class="border border-gray-600 rounded-[8px] w-full h-40 md:h-56 px-3 py-2 resize-none"
+            [(ngModel)]="asunto"
+        ></textarea>
 
     </div>
 
@@ -124,21 +183,21 @@
 
 
         <!-- CREAR NÚMERO -->
-  <button
-      type="button"
+        <!-- CAMBIO 4: se agregó "|| !areaSeleccionada()" al [disabled] -->
+        <button
+            type="button"
             (click)="createNumber()"
-            [disabled]="creandoNumero() || !destinatario || !asunto"
-      
-    class="bg-green-500 w-full sm:w-32 h-10 rounded-[8px] text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
->
-    Crear número
-</button>
+            [disabled]="creandoNumero() || !destinatario || !asunto || !creador.trim() || !areaSeleccionada()"
+            class="bg-green-500 w-full sm:w-32 h-10 rounded-[8px] text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            Crear número
+        </button>
 
     </div>
 
 
     <!-- MODAL -->
-    @if(showModal()) {
+    @if (showModal()) {
 
         <div class="fixed inset-0 bg-black/40 flex items-center justify-center px-4">
 
@@ -148,13 +207,24 @@
                     Tu número de salida es:
                 </h1>
 
+                <!-- CAMBIO 5: el número ahora se muestra con 4 dígitos (0001, 0010, 0100...) -->
                 <p class="text-center mb-5 text-2xl">
-                    {{numberCreate()}}
+                    {{ numberCreate().toString().padStart(4, '0') }}
                 </p>
+                @if (numberYear(); as anio) {
+    <p class="text-center text-sm text-gray-600 mb-4">
+        Número del año <strong>{{ anio }}</strong>
+    </p>
+}
+
+    <p class="text-center text-sm text-gray-600 mb-4">
+    Este número queda <strong>reservado para ti</strong> (Utilizado).
+    Si al final no lo usas, dile al administrador que lo <strong>Libere</strong>
+    para que otra persona pueda usarlo.
+</p>
 
                 <button
-                 routerLink="/home"
-                 
+                    routerLink="/home"
                     type="button"
                     (click)="closeNumber()"
                     class="text-center border bg-green-500 rounded-[8px] text-white w-20 h-9 hover:bg-green-700"

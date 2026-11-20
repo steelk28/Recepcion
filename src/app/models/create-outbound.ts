@@ -10,4 +10,8 @@ export interface CreateOutbound {
     description: string;
 
     area: string;
+
+    created_by: string;
+
+    subarea?: string | null;
 }

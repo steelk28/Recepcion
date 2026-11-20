@@ -1,3 +1,36 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+/* Al imprimir, la hoja sale en horizontal y con márgenes pequeños */
+@page {
+  size: landscape;
+  margin: 10mm;
+}
+
+/* Tamaño base de la letra según el ancho de la pantalla.
+   Como casi todo está en unidades relativas (rem), toda la aplicación escala junta. */
+html {
+  font-size: 16px;
+}
+
+/* Pantallas grandes: la letra crece (hasta 24px) */
+@media (min-width: 1441px) {
+  html {
+    font-size: clamp(16px, 0.714vw + 5.7px, 24px);
+  }
+}
+
+/* Pantallas pequeñas: la letra baja un poco (mínimo 13px) para que todo quepa */
+@media (max-width: 1440px) {
+  html {
+    font-size: clamp(13px, 0.48vw + 9px, 16px);
+  }
+}
+
+/* Al imprimir se vuelve al tamaño normal (debe ir al final) */
+@media print {
+  html {
+    font-size: 16px;
+  }
+}
